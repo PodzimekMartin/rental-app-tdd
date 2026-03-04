@@ -43,9 +43,9 @@ class PersistentRentalServiceIT {
 
         assertEquals(700, total);
 
-        assertEquals(RentalStatus.RETURNED,
-                rentalRepo.getStatus("item1"));
+        assertEquals(RentalStatus.RETURNED, rentalRepo.getStatus("item1"));
     }
+
     @Test
     void cannotReturnBeforeStartDate() throws Exception {
 
@@ -64,7 +64,7 @@ class PersistentRentalServiceIT {
                 new PersistentRentalService(itemRepo, rentalRepo, fixedClock);
 
         service.addItem(UserRole.ADMIN, "itemX");
-        service.rentItemWithDueDate("itemX", 5); // start = 2026-03-04
+        service.rentItemWithDueDate("itemX", 5);
 
         assertThrows(IllegalStateException.class, () ->
                 service.returnItemOn("itemX", LocalDate.parse("2020-04-04"))
@@ -88,18 +88,19 @@ class PersistentRentalServiceIT {
              Statement st = c.createStatement()) {
 
             st.execute("""
-                CREATE TABLE items (
+                CREATE TABLE IF NOT EXISTS items (
                     id VARCHAR(100) PRIMARY KEY
                 )
             """);
 
             st.execute("""
-                CREATE TABLE rentals (
+                CREATE TABLE IF NOT EXISTS rentals (
                     item_id VARCHAR(100) PRIMARY KEY,
                     status VARCHAR(20),
                     start_date DATE,
                     due_date DATE,
-                    total_price INT
+                    total_price INT,
+                    FOREIGN KEY (item_id) REFERENCES items(id)
                 )
             """);
         }

@@ -61,6 +61,11 @@ public class PersistentRentalService {
         LocalDate startDate = rentalRepository.getStartDate(itemId);
         LocalDate dueDate = rentalRepository.getDueDate(itemId);
 
+        // NOVÉ BUSINESS PRAVIDLO
+        if (returnDate.isBefore(startDate)) {
+            throw new IllegalStateException("Return date cannot be before start date");
+        }
+
         int basePrice =
                 (int) ChronoUnit.DAYS.between(startDate, dueDate)
                         * DAILY_PRICE;
