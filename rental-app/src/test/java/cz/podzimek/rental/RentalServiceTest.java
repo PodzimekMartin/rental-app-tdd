@@ -73,4 +73,18 @@ class RentalServiceTest {
         // admin může
         service.addItem(UserRole.ADMIN, "item42");
     }
+
+    @Test
+    void customerCannotHaveMoreThanThreeActiveRentals() {
+
+        RentalService service = new RentalService();
+
+        service.rentItemForCustomer("CUSTOMER1", "item1");
+        service.rentItemForCustomer("CUSTOMER1", "item2");
+        service.rentItemForCustomer("CUSTOMER1", "item3");
+
+        assertThrows(IllegalStateException.class, () ->
+                service.rentItemForCustomer("CUSTOMER1", "item4")
+        );
+    }
 }
