@@ -4,6 +4,8 @@ import java.time.Clock;
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.HashSet;
+import java.util.Set;
 
 public class RentalService {
 
@@ -18,12 +20,28 @@ public class RentalService {
     // nový detail půjčky kvůli ceně a termínu
     private final Map<String, RentalDetails> rentalByItem = new HashMap<>();
 
+    // katalog itemů (ADMIN je může přidávat)
+    private final Set<String> catalogItemIds = new HashSet<>();
+
     public RentalService() {
         this(Clock.systemDefaultZone());
     }
 
     public RentalService(Clock clock) {
         this.clock = clock;
+    }
+
+    // ====== NOVÉ FUNKCE PRO ROLE ======
+
+    public void addItem(UserRole role, String itemId) {
+        if (role != UserRole.ADMIN) {
+            throw new IllegalStateException("Only ADMIN can add items");
+        }
+
+        // zabránění duplicitě v katalogu
+        if (!catalogItemIds.add(itemId)) {
+            throw new IllegalStateException("Item already exists in catalog");
+        }
     }
 
     public void rentItem(String itemId) {

@@ -67,10 +67,10 @@ class RentalServiceTest {
         RentalService service = new RentalService();
 
         assertThrows(IllegalStateException.class, () ->
-                service.addItem("CUSTOMER", "item42")
+                service.addItem(UserRole.CUSTOMER, "item42")
         );
 
         // admin může
-        service.addItem("ADMIN", "item42");
+        service.addItem(UserRole.ADMIN, "item42");
     }
 }
