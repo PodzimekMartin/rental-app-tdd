@@ -61,4 +61,16 @@ class RentalServiceTest {
 
         assertEquals(700, price);
     }
+
+    @Test
+    void onlyAdminCanAddNewItem() {
+        RentalService service = new RentalService();
+
+        assertThrows(IllegalStateException.class, () ->
+                service.addItem("CUSTOMER", "item42")
+        );
+
+        // admin může
+        service.addItem("ADMIN", "item42");
+    }
 }
