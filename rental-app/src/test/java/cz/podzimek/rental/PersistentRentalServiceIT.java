@@ -46,6 +46,30 @@ class PersistentRentalServiceIT {
         assertEquals(RentalStatus.RETURNED,
                 rentalRepo.getStatus("item1"));
     }
+    @Test
+    void cannotReturnBeforeStartDate() throws Exception {
+
+        DataSource ds = createDataSource();
+        initSchema(ds);
+
+        Clock fixedClock = Clock.fixed(
+                Instant.parse("2026-03-04T00:00:00Z"),
+                ZoneOffset.UTC
+        );
+
+        JdbcItemRepository itemRepo = new JdbcItemRepository(ds);
+        JdbcRentalRepository rentalRepo = new JdbcRentalRepository(ds);
+
+        PersistentRentalService service =
+                new PersistentRentalService(itemRepo, rentalRepo, fixedClock);
+
+        service.addItem(UserRole.ADMIN, "itemX");
+        service.rentItemWithDueDate("itemX", 5); // start = 2026-03-04
+
+        assertThrows(IllegalStateException.class, () ->
+                service.returnItemOn("itemX", LocalDate.parse("2020-04-04"))
+        );
+    }
 
     private static DataSource createDataSource() {
 
