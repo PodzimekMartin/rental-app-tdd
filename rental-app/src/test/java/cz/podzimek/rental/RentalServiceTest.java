@@ -27,4 +27,16 @@ class RentalServiceTest {
                 service.rentItemForCustomer("customer1", "item4")
         );
     }
+
+    @Test
+    void rentalCannotBeReturnedTwice() {
+        RentalService service = new RentalService();
+
+        service.rentItem("item1");
+        service.returnItem("item1");
+
+        assertThrows(IllegalStateException.class, () ->
+                service.returnItem("item1")
+        );
+    }
 }
